@@ -1,5 +1,5 @@
 My Website
 -----
-austinluong.github.io
+https://austinluong.github.io/
 
 Website placeholder
