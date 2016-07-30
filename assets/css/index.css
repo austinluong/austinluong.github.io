@@ -1,0 +1,55 @@
+.intro {
+    text-align: center;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    height: 140px;
+    width: 650px;
+    overflow: auto;
+    line-height: 0px;
+    font-family: 'open sans', arial, sans-serif;
+    text-transform: uppercase;
+}
+
+.intro #heading {
+    font-size: 70px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    padding-left: 10px;
+}
+
+.intro #subheading {
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.intro #school {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 10px;
+    letter-spacing: 5px;
+}
+
+.menu {
+    margin: 0 auto;
+    background-color: #A32B26;
+    opacity: 0.75;
+}
+
+.menu .menu-items {
+    margin: auto;
+    text-align: center;
+    position: relative;
+    top: 0; left: 0; bottom: 0; right: 0;
+    padding: 20px 0;
+    width: 800px;
+}
+
+.menu-items a {
+    font-size: 20px;
+    font-family: 'open sans', arial, sans-serif;
+    color: #ffffff;
+    text-decoration: none;
+    padding-right: 20px;
+    padding-left: 20px;
+}
