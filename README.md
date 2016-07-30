@@ -1,5 +1,5 @@
-My Website
+Website
 -----
 https://austinluong.github.io/
 
-Website placeholder
+Heavily in construction.

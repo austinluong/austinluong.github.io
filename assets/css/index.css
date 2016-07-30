@@ -7,20 +7,20 @@
     width: 650px;
     overflow: auto;
     line-height: 0px;
-    font-family: 'open sans', arial, sans-serif;
     text-transform: uppercase;
 }
 
 .intro #heading {
     font-size: 70px;
-    font-weight: 500;
-    letter-spacing: 5px;
-    padding-left: 10px;
+    font-weight: 600;
+    letter-spacing: 7.2px;
+    padding-left: 12px;
 }
 
 .intro #subheading {
     font-size: 25px;
-    font-weight: 500;
+    font-weight: 400;
+    letter-spacing: 1px;
 }
 
 .intro #school {
@@ -47,7 +47,7 @@
 
 .menu-items a {
     font-size: 20px;
-    font-family: 'open sans', arial, sans-serif;
+    font-weight: 300;
     color: #ffffff;
     text-decoration: none;
     padding-right: 20px;
