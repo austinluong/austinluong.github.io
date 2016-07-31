@@ -2,7 +2,30 @@ body {
   margin: 0px;
   background-color: #F7F7F7;
   color: #2F3131;
-  font-size: 17px;
-  font-weight: 300;
-  font-family: 'Open Sans', arial, sans-serif;
+  font-size: 19px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.menu {
+    margin: 0 auto;
+    background-color: #A32B26;
+    opacity: 0.75;
+}
+
+.menu .menu-items {
+    margin: auto;
+    text-align: center;
+    position: relative;
+    top: 0; left: 0; bottom: 0; right: 0;
+    padding: 19px 0;
+    width: 800px;
+}
+
+.menu-items a {
+    font-size: 21px;
+    font-weight: 300;
+    color: #ffffff;
+    text-decoration: none;
+    padding-right: 20px;
+    padding-left: 20px;
 }

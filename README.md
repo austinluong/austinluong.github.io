@@ -2,4 +2,4 @@ Website
 -----
 https://austinluong.github.io/
 
-Heavily in construction.
+Heavily under construction.
