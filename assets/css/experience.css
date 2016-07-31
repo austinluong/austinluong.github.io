@@ -1,0 +1,17 @@
+.intro {
+    text-align: center;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    height: 140px;
+    width: 1000px;
+    line-height: 0px;
+    text-transform: uppercase;
+}
+
+.intro #heading {
+    font-size: 70px;
+    font-weight: 600;
+    letter-spacing: 7.2px;
+    padding-left: 12px;
+}

@@ -1,0 +1,16 @@
+.main-container {
+    margin: auto;
+    position: absolute;
+    top: 25px; left: 650px; bottom: 0px; right: 0;
+    height: 500px;
+    width: 600px;
+}
+
+.picture-container {
+    margin: auto;
+    position: absolute;
+    top: 40px; left: 0; bottom: 0px; right: 650px;
+    height: 500px;
+    width: 600px;
+    background-color: gainsboro;
+}
