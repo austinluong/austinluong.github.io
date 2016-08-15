@@ -1,16 +1,14 @@
 .main-container {
+    font-size: 20px;
+    text-align: center;
     margin: auto;
     position: absolute;
-    top: 25px; left: 650px; bottom: 0px; right: 0;
-    height: 500px;
-    width: 600px;
+    top: 0; left: 0; bottom: 50px; right: 0;
+    height: 140px;
+    max-width: 700px;
 }
 
-.picture-container {
-    margin: auto;
-    position: absolute;
-    top: 40px; left: 0; bottom: 0px; right: 650px;
-    height: 500px;
-    width: 600px;
-    background-color: gainsboro;
+.main-container strong {
+    font-weight: 400;
+    color: #B13131
 }

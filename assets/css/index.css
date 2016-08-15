@@ -2,30 +2,52 @@
     text-align: center;
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
+    top: 0; left: 0; bottom: 50px; right: 20px;
     height: 140px;
-    width: 650px;
-    overflow: auto;
+    width: 800px;
     line-height: 0px;
     text-transform: uppercase;
 }
 
-.intro #heading {
+.intro .info #heading {
     font-size: 70px;
     font-weight: 600;
     letter-spacing: 7.2px;
     padding-left: 12px;
 }
 
-.intro #subheading {
+.intro .info #subheading {
     font-size: 25px;
     font-weight: 400;
     letter-spacing: 1px;
 }
 
-.intro #school {
-    font-size: 15px;
+hr {
+    width: 650px;
+}
+
+.intro #hr {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.intro .lower #links a {
+    font-size: 20px;
     font-weight: 500;
-    line-height: 10px;
+    color: #525555;
+    text-decoration: none;
+    padding-right: 30px;
+    padding-left: 30px;
+}
+
+.intro .lower #links a:hover {
+    color: #B13131;
+}
+
+.intro .lower #school {
+    padding-top: 30px;
+    font-size: 20px;
+    font-weight: 500;
     letter-spacing: 5px;
 }
+
