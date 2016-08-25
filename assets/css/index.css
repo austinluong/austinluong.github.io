@@ -38,6 +38,11 @@ hr {
     text-decoration: none;
     padding-right: 30px;
     padding-left: 30px;
+    -webkit-transition: color 250ms linear;
+    -moz-transition: color 250ms linear;
+    -o-transition: color 250ms linear;
+    -ms-transition: color 250ms linear;
+    transition: color 250ms linear;
 }
 
 .intro .lower #links a:hover {
