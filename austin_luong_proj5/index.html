@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Depth Refocusing and Aperture Adjustment with Light Field Data</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="col-sm-12 bg-1">
+    <div class="col-sm-8 col-sm-offset-2 bg-1">
+      <div class="container-fluid bg-3">
+        <h1>CS 194-26 Project 5 - Depth Refocusing and Aperture Adjustment with Light Field Data</h1>
+        <h2>Austin Luong</h2>
+    </div>
+
+  <div class="container-fluid bg-2">
+    <h1>Overview</h2>
+      <p>
+        One of the major issues with photography is that is that the parameters such as the depth of field and aperture size must be set as desired when the photo is taken. But as <a href="http://graphics.stanford.edu/papers/lfcamera/lfcamera-150dpi.pdf">this paper</a> by Ren Ng demonstrates, capturing multiple images over a plane orthogonal to the optical axis enables effects such as depth refocusing and aperture adjustment in post-processing using simple operations such as shifting and averaging. The images used in this project are taken from the <a href="http://lightfield.stanford.edu/lfs.html">Stanford Light Field Archive</a>.
+      </p>
+
+    <h1>Depth Refocusing</h2>
+      <p>
+        Using the grid of light field images, it is possible to create a realistic depth refocusing effect with simple shifts and averages. The key idea behind the technique is that which are far away from the camera do not vary their position significantly when the camera moves around while nearby objects vary their position significantly. As a result, averaging all the images in the grid without any shifting will produce an image which is sharp around the far-away objects but blurry around the nearby ones. Similarly, shifting the images 'appropriately' and then averaging allows one to focus on object at different depths.
+      </p>
+
+    <h3> Algorithm </h3>
+      <p>
+        The general algorithm is surprisingly simple. Let the grid of images be indexed by i, j. A translation factor (u[i, j], v[i, j]) is computed for each image[i, j]. Each image[i, j] is then shifted by C * (u[i, j], v[i, j]) where C is some specified constant that controls the focus depth. The resulting image is formed by averaging each of the shifted images. Below are some of the results.
+      </p>
+
+      <h3>Chess Board</h3>
+      <br>
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="chess_df_060_0.000.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="chess_df_080_0.100.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            C = 0 (this is the same as just averaging all the images)
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            C = 0.1
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="chess_df_100_0.200.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="chess_df_120_0.300.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            C = 0.2
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            C = 0.3
+          </p>
+        </div>
+      </div>
+
+    <h3>Bracelet</h3>
+    <br>
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="bracelet_df_000_-0.100.jpg" class="img-responsive center-block" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="bracelet_df_002_0.100.jpg" class="img-responsive center-block" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <p class='caption text-center'>
+          C = -0.1
+      </p>
+    </div>
+      <div class="col-sm-6">
+        <p class='caption text-center'>
+          C = 0
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="bracelet_df_003_0.200.jpg" class="img-responsive center-block" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="bracelet_df_004_0.300.jpg" class="img-responsive center-block" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <p class='caption text-center'>
+          C = 0.1
+      </p>
+    </div>
+      <div class="col-sm-6">
+        <p class='caption text-center'>
+          C = 0.2
+        </p>
+      </div>
+    </div>
+
+    <h3>Treasure Chest</h3>
+    <br>
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="treasure_df_001_-0.200.jpg" class="img-responsive center-block" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="treasure_df_002_-0.100.jpg" class="img-responsive center-block" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <p class='caption text-center'>
+          C = -0.2
+      </p>
+    </div>
+      <div class="col-sm-6">
+        <p class='caption text-center'>
+          C = -0.1
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="treasure_df_003_0.000.jpg" class="img-responsive center-block" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="treasure_df_005_0.200.jpg" class="img-responsive center-block" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <p class='caption text-center'>
+          C = 0
+      </p>
+    </div>
+      <div class="col-sm-6">
+        <p class='caption text-center'>
+          C = 0.2
+        </p>
+      </div>
+    </div>
+
+    <h3>Animated Refocusing</h3>
+    <p>
+      I also created some animated refocusing gifs by varying C in small steps and combining the resulting images into a gif. Looks like what happens when you refocus the camera in person.
+    </p>
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-2 col-sm-8">
+        <video class="img-responsive center-block" width="650px" autoplay="autoplay" loop="loop">
+          <source src="chess_refocus.mp4" type="video/mp4"/>
+        </video>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-offset-2 col-sm-8">
+        <p class='caption text-center text-center'>
+          Animated refocusing of the chess board. C has values from -0.3 to 0.7 in 0.005 step intervals.
+        </p>
+      </div>
+    </div>
+    <br>
+
+    <div class="row">
+      <div class="col-sm-offset-2 col-sm-8">
+        <video class="img-responsive center-block" width="650px" autoplay="autoplay" loop="loop">
+          <source src="treasure_refocus.mp4" type="video/mp4"/>
+        </video>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-offset-2 col-sm-8">
+        <p class='caption text-center text-center'>
+          Animated refocusing of the treasure chest. C has values from -0.3 to 0.7 in 0.005 step intervals.
+        </p>
+      </div>
+    </div>
+
+    <h1>Aperture Adjustment</h1>
+      <p>
+        It is possible to mimic a smaller and larger aperture by taking averaging more and more images starting from the center of the image grid. For example, taking just the center image in the grid would be considered a aperture size = 0 image. A aperture size = 1 image would created by averaging the center image and the images within a distance of 1 away from it (so the cetner 9 images). Below are some of the results. Notice that the pictueres get blurrier with a larger "aperture size" just as they would when taking images with a camera with a larger aperture size.
+      </p>
+
+      <h3>Chess Board</h3>
+      <br>
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="chess_ap_1.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="chess_ap_3.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 1
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture Size = 3
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="chess_ap_5.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="chess_ap_7.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 5
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 7
+          </p>
+        </div>
+      </div>
+
+      <h3>Bracelet</h3>
+      <br>
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="bracelet_ap_1.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="bracelet_ap_3.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 1
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture Size = 3
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="bracelet_ap_5.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="bracelet_ap_7.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 5
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 7
+          </p>
+        </div>
+      </div>
+
+      <h3>Treasure Chest</h3>
+      <br>
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="treasure_ap_1.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="treasure_ap_3.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 1
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture Size = 3
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="treasure_ap_5.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="treasure_ap_7.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 5
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            Aperture size = 7
+          </p>
+        </div>
+      </div>
+<div class="container-fluid"></div>
+</div>
+</div>
+</body>
+</html>

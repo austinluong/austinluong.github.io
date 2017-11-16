@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Fun with Frequencies and Gradients</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="col-sm-12 bg-1">
+    <div class="col-sm-8 col-sm-offset-2 bg-1">
+      <div class="container-fluid bg-3">
+        <h1>CS 194-26 Project 3 - Fun with Frequencies and Gradients</h1>
+        <h2>Austin Luong</h2>
+    </div>
+
+  <div class="container-fluid bg-2">
+    <h1>Part 1: Frequency Domain</h2>
+    <!-- Warmup -->
+    <h2>Warmup: Unsharp Masking</h2>
+    <p>
+      The warmup involving a blurry photo and sharpening using the unsharp masking technique.
+      This involves first creating a "detail" image taking the difference between an image and
+      a slightly Gaussian blurred version of the image. Then, the detail image time some
+      constant alpha is added back to original image to enhance the detail and effectively
+      sharpen the image. Below are results for 4 different alpha values. As you increase
+      alpha, the sharpenning effect increases but also creates an odd stencil effect when it is too high.
+    </p>
+
+    <br>
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="blurry-campanile.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="sharpened-campanile-1-.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <p class='caption'>
+          alpha = 0 (original image)
+      </p>
+    </div>
+      <div class="col-sm-6">
+        <p class='caption'>
+          alpha = 1
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="sharpened-campanile-3-.jpg"" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="sharpened-campanile-10-.jpg"" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <p class='caption'>
+          alpha = 3
+      </p>
+    </div>
+      <div class="col-sm-6">
+        <p class='caption'>
+          alpha = 10
+        </p>
+      </div>
+    </div>
+
+    <!-- Hybrid Images -->
+    <h2>Hybrid Images</h2>
+    <p>
+      Most people are likely familiar with Einstein / Marilyn Monroe illusion that look like
+      one or the other based on how far you are from the image. It is possible to create
+      similar illusions to that using the technique described in a SIGGRAPH 2006
+      <a href="http://cvcl.mit.edu/publications/OlivaTorralb_Hybrid_Siggraph06.pdf">paper</a>.
+      The basic idea is to mix a high frequency version of one image with a low frequency version
+      of another image. The high frequency image is the "detail" image created as described previously.
+      The low frequency image is a Gaussian blurred image. Additionally, a litle bit of the high frequency
+      image is added to the hybrid image so that the low frequency image does not completely dominate in
+      texture and color. Now when you look at these hybrid images from up close, you should be able to
+      only clearly see the high frequency image. Similary, when looking from afar, only the low frequency
+      can be seen. Note: it may be helpful to open the image in new tab and zoom in and out.
+    </p>  
+
+    <br>
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="trump-hillary.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <p class='caption'>
+          A cat (close) or a shiba inu (far)
+        </p>
+    </div>
+      <div class="col-sm-6">
+        <p class='caption'>
+          Donald Trump (close) or Hillary Clinton (far)
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="elephant-cow.jpg"" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+        <img src="elephant-cow-bw.jpg"" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <p class='caption'>
+          An elephant (close) or a cow (far)
+        </p>
+      </div>
+      <div class="col-sm-6">
+        <p class='caption'>
+          Black and white version of left iamge
+        </p>
+      </div>
+    </div>
+    <p>
+      The above results are pretty good when the original images
+      already have a decent amount of similarity. However, when the images are bit too
+      different in color, alignment, shape, or size the results are not as convicining as
+      shown in the elephant-cow hybrid. From close up, the color of the cow is too
+      noticeable and distracting from the high frequency elephant. In black and white,
+      these issues are moderately alleviated.
+    </p>
+
+    <h3>Process</h3>
+    <p>
+      The process for can be visualized through looking at the frequency domain of the
+      images being merged. In the frequency images (lower row), a white dot represents a present
+      frequency and angle. Its distance from the origin is its frequency (farther is higher)
+      and its radial position is its angle. The process is shown below for the shiba-cat hybrid.
+    </p>
+    
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-2">
+        <img src="cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="shiba.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="high_freq_shiba-cat-bw.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="low_freq_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-2">
+        <img src="im2_freq.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="im1_freq.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="im2_freq_sharp.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="im1_freq_blur.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="hybrid_freq.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-10">
+        <p class='caption'>
+          The left two images are the source images and their frequencies. The next
+          two images are the high frequency and low frequency components of the hybrid
+          image. Notice the change in the frequency of the high frequency and low frequency
+          components. The final image is the output and its frequencies.
+        </p>
+      </div>
+    </div>
+
+    <!-- Gaussian and Laplacian Stacks -->
+    <h2>Gaussian and Laplacian Stacks</h2>
+    <p>
+        A Gaussian stack is simply a stack of images with increasing levels (doubling 
+        in my case) of Gaussian blurring applied to some source image at each level. A Laplacian stack is stack
+        created by taking the differences between the levels in the Gaussian stack. That is,
+        the i-th layer of the Laplacian stack is the difference between the i-th and (i + 1)-th 
+        layer of the Gaussian stack. This creates bandpass images. Additionally, the last layer 
+        of the Laplacian stack is the last Gaussian layer used to create the difference image.
+        This is so we can recover the original image by summing the Laplacian stack. Below are the 
+        results of applying the Gaussian and Laplacian stacks to two images.
+    </p>
+
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-2">
+        <img src="gaus_0_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="gaus_1_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="gaus_2_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="gaus_3_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="gaus_4_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-2">
+        <img src="lapl_0_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="lapl_1_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="lapl_2_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="lapl_3_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="lapl_4_lincoln.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-10">
+        <p class='caption'>
+          The Gaussian and Laplacian stacks applied to the painting
+          <a href="https://en.wikipedia.org/wiki/Lincoln_in_Dalivision">Lincoln in Dalivision</a>
+          by Salvador Dali.
+        </p>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-2">
+        <img src="gaus_0_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="gaus_1_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="gaus_2_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="gaus_3_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="gaus_4_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-2">
+        <img src="lapl_0_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="lapl_1_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="lapl_2_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="lapl_3_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="lapl_4_shiba-cat.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-10">
+        <p class='caption'>
+          The Gaussian and Laplacian stacks applied to the shiba-cat hybrid created
+          earlier. Notice how the Laplacian images turn from clearly showing the high
+          frequency cat to showing the low frequency shiba inu at lower levels.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Multiresolution Blending -->
+    <h2>Multiresolution Blending</h2>
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="naive-apple-orange.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="apple-orange.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <p class='caption'>
+          Naive blending of apple and orange
+        </p>
+    </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          Multiresolution blending of apple and orange
+        </p>
+      </div>
+    </div>
+
+    <p>
+        Using the techniques described in a 1983
+        <a href="http://persci.mit.edu/pub_pdfs/spline83.pdf">paper</a>
+        bt Burt and Adelson, it is possible to seamlessly blend two images together
+        using a technique called multi resolution blending. The technique first creates 
+        Laplacian stacks of two images you want to blend and a Gaussian stack of an
+        image mask specifying where to blend the images. The stacks are all combined into
+        a new stack such that each layer i of the new stack is:
+    </p>
+    <p style="margin-left:40px">
+      Blend[i] = Laplacian_A[i] * Gaussian_Mask[i] + (1 - Gaussian_Mask[i]) ** Laplacian_B[i]
+    </p>
+    <p>
+      The blended stack is then collapsed or summed to create the final blended image. Some 
+      examples are shown below (only some inputs and masks are shown).
+    </p>
+
+    <h3>Penguin goes on vacation</h3>
+    <div class="row">
+      <div class="col-sm-4">
+          <img src="pyramids.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="penguin.jpeg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="penguin_pyramid_mask.jpeg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-10">
+        <img src="penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div> 
+
+    <h3>A mutant dog owl yawning</h3>
+    <div class="row">
+      <div class="col-sm-3">
+          <img src="owl.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-3">
+          <img src="dog_yawn.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-3">
+          <img src="dog_owl_mask.jpeg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-3">
+          <img src="owl-dog.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+  
+    <h3>Some familiar faces</h3>
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="trump-hillary-blend.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="hillary-trump-blend.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+
+    <h3>Process</h3>
+    <p>
+      The process for can be visualized by looking at the contributions of the
+      Laplacian stack of the first image and the Laplacian stack of the second image.
+      This visualization is shown below for the penguin-pyramid example. It may help to 
+      turn up your monitor brightness or open the images in a new tab.
+    </p>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+          <img src="contr_im1_0_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="contr_im2_0_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="blend_0_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+          <img src="contr_im1_1_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="contr_im2_1_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="blend_1_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+          <img src="contr_im1_2_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="contr_im2_2_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="blend_2_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+          <img src="contr_im1_3_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="contr_im2_3_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="blend_3_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+          <img src="contr_im1_4_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="contr_im2_4_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="blend_4_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+          <img src="contr_im1_5_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="contr_im2_5_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="blend_5_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+          <img src="contr_im1_summed_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="contr_im2_summed_penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+          <img src="penguin-pyramid.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+        <p class='caption'>
+          The Laplacian stack for the penguin image. The bottom image is the sum of
+          the images in the stack.
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          The Laplacian stack for the pyramid image. The bottom image is the sum of
+          the images in the stack.
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          The merged / blended stack for the blended image. The bottom image is the sum of
+          the images in the stack.
+        </p>
+      </div>
+    </div>
+
+    <h1>Part 2: Gradient Domain</h2>
+    <h2>Overview</h2>  
+    <p>
+      Now we turn our attention to the gradient domain instead of the frequency 
+      domain. It turns out that in most image blending tasks, what we really care 
+      about are that the gradients between the images match well rather than the 
+      actual pixels. In this part, we explore a way to seamlessly blend a source image
+      into a target image by having the output iamge satisfy a set of constraints involving
+      the gradients of the source and output images.
+    </p>
+
+    <!-- Toy Problem -->
+    <h2>Toy Problem</h2>
+    <p>
+      First we consider a toy problem using an image. We use all the gradients of the
+      image plus one pixel intensity to reconstruct an image. The constraints
+      are that the image and output image have the same gradients and that they have
+      the same top left pixel. Logically, this should result in the same image. This
+      optimization can be solved as a least squares problem. Below, input is shown on the left
+      and output and shown on the right.
+    </p>
+
+    <br>
+    <div class="row">
+      <div class="col-sm-offset-4 col-sm-2">
+          <img src="toy_problem.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-2">
+          <img src="toy_problem.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+
+    <!-- Poisson Blending -->
+    <h2>Poisson Blending</h2>
+    <p>
+      Using the idea of gradients, we can specify a least squares problem to seamlessly blend a 
+      source image into a target image. The specification that follows results in a technique known
+      as Poisson Blending. The gist of the idea is that inside an input mask, the gradients of the 
+      output (blended) image should match the gradients of the source image. That is, the object we 
+      paste into a new image should have gradients in the new image that match the object in its
+      original image. Additionally, the pixels not in the mask should all be set to the that of the 
+      target image (the image we are pasting into to). We take the gradient as a 3x3 Laplacian kernel
+      at each point. Doing so results in a set of equations that we can use to fill in a sparse matrix and solve
+      for our output pixels. The results are shown below.
+    </p>
+
+    <h3>Jaws</h3>
+    <div class="row">
+      <div class="col-sm-6">
+          <img src="shark_moved.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="underwater.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-6">
+          <img src="naive_shark-underwater.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="shark-underwater.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <p>
+      The input images and the naive blending is show in comparison to the Poisson blending (lower right image).
+      This result turned out quite well and seamless but the shark is colored a bit too dark because I placed it
+      too low halfway into a dark part of an image which messed with the gradients a bit.
+    </p>
+
+    <h3>Nixle Alert: Lion Spotted on Memorial Galde</h3>
+    <div class="row">
+      <div class="col-sm-10">
+          <img src="lion-glade.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <p>
+      This result did not turn out as well as hoped. The lion turned much too 
+      green because of the strong green color of Memorial Glade and there is also
+      blurring around the edges of the lion caused by a different and lower resolution
+      texture of grass in the source lion image. The higher resolution of the Memorial
+      Glade also makes the lion look blurrier and out of place.
+    </p>
+
+    <h3>A Dragon and the Campanile</h3>
+    <div class="row">
+      <div class="col-sm-12">
+          <img src="dragon-campanile.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <p>
+      Another fairly good result. The dragon's color is blended very realistically
+      with the background image but there is some artifacts due to the source image 
+      having clouds while the target did not.
+    </p>
+
+    <h3>Multiresoltuion vs Poisson Blending: Trump + Hillary Revisited</h3>
+    <div class="row">
+      <div class="col-sm-6">
+          <img src="trump-hillary-grad.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="hillary-trump-grad.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-6">
+        <img src="trump-hillary-blend.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-6">
+          <img src="hillary-trump-blend.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+      <p class="caption">
+        The Poisson blending results are shown above and the multiresolution blending
+        results from before are shown below.
+      </p>
+      </div>
+    </div>
+    <p>
+      The results Poisson blending exceeded that of Laplacian pyramid blending from 
+      part 1 in this case. The face colors blend much more seamlessly and the lighting
+      of the resulting image is more realistic looking. For blends where gradients, lighting,
+      and colors matter a lot more, Poisson blending is the better choice. These cases are most 
+      prevalent when you want to add one object into another and have it look realistic. However,
+      Laplacian pyramid blending may work better for cases where you want to perserve the color of
+      the original image more and just want the blend to be seamless. For example, running Poisson
+      on the penguin-pyramid image from part 1 results in a brown colored penguin towards the bottom 
+      and makes the snow brown which was not desired (this result is not show because of time).
+    </p>
+</div>
+<div class="container-fluid"></div>
+</div>
+</div>
+</body>
+</html>

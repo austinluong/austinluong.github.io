@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Face Morphing and Modeling a Photo Collection</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="col-sm-12 bg-1">
+    <div class="col-sm-8 col-sm-offset-2 bg-1">
+      <div class="container-fluid bg-3">
+        <h1>CS 194-26 Project 4 - Face Morphing and Modeling a Photo Collection</h1>
+        <h2>Austin Luong</h2>
+    </div>
+
+  <div class="container-fluid bg-2">
+    <h1>Overview</h2>
+      <p>
+        In this project, animations of morphing faces into other faces were produced, although the techniques do work in general for non-face shapes as well. A morph is definied as a simultaneous weighted warp and cross dissolve of a sources images to a desired destination. The warp is controlled by chosen corespondence points. Additionally, a mean face of a population was created from an annotated face data set and used to create a caricature by extrapulating from the mean.
+      </p>
+
+    <h1>Defining Correspondences</h2>
+      <p>
+        The first step in the morph procedure is to define a set of corresponding points between the two images to be morphed. These corresponding points are averaged to get a mean shape and used to define a Delaunay triangulation. This triangulation remains constant and will be used for all warps in the morph sequence. 
+      </p>
+      <br>
+      <div class="row">
+        <div class="col-sm-offset-1 col-sm-4">
+          <img src="traingulation_2.jpg" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-offset-2 col-sm-4">
+            <img src="triangulation.jpg" class="img-responsive" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-offset-1 col-sm-4">
+          <p class='caption'>
+            Triangulation on my face
+        </p>
+      </div>
+        <div class="col-sm-offset-2 col-sm-4">
+          <p class='caption'>
+            Triangulation on George Clooney's Face
+          </p>
+        </div>
+      </div>
+
+    <h1>Computing the "Mid-Way Face"</h1>
+      <p>
+        As an excercise, the mid-way point of the morph was created first. In order to accomplish this, the source images must be 1) warped into the mean shape and 2) cross dissolved to their mean colors. The warping procedure involves defining inverse affine transforms from each destination triangle to the corresponding source image triangles. Then for each triangle in the destination, we apply the corresponding affine transformations to get the points in the corrsepond to that triangle in both source images. These points are in the source image are color averaged and filled into the destination triangle. This completes the mid-way morph image. 
+      </p>
+    <br>
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="me_normal.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="out_030.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="george_small.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <p class='caption'>
+          This is me
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          This is the mid-way face
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          This is George Clooney
+        </p>
+      </div>
+    </div>
+
+    <h1>The Morph Sequence</h1>
+      <p>
+        Generating a complete morph sequence is simply a generalization of the previous part. Now instead of simply averaging the corresponding points and colors, we use some arbitrary value t (0 <= t <= 1) to define the proportional contribution of one source image to the morph (with 1-t being the contribution of the other image). We pick many t's equally spaced between 0 and 1 and save the intermediate morphed images at each step. These images are then combined into a gif to create nice morphing animation.
+      </p>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <img src="https://media.giphy.com/media/xT9Igq6MtWYjOJpXPO/giphy.gif" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-4">
+          <img src="https://media.giphy.com/media/xT9IgjxEVyASFDJKbS/giphy.gif" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-4">
+          <img src="https://media.giphy.com/media/l378mY7UxWGPGdeik/giphy.gif" class="img-responsive" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <p class='caption'>
+            Me becoming George Clooney
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <p class='caption'>
+            Me changing emotions
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <p class='caption'>
+            Me getting angry
+          </p>
+        </div>
+      </div>
+
+      <!-- GIF OF MORPHING ANIMATION -->
+
+    <h1>The "Mean Face" of A Population</h1>
+      <p>
+        Next a "mean face" of a population was created using only the female faces of a <a href="http://fei.edu.br/~cet/facedatabase.html">faces dataset</a>. This was done by computing the average shape of the whole population and then morphing each of the faces into the average shape and color.
+      </p>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <img src="population_average_face.jpg" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-4">
+          <img src="me_to_average.jpg" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-4">
+          <img src="average_to_me.jpg" class="img-responsive" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <p class='caption'>
+            The average female population face
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <p class='caption'>
+            Morph of me to the average face
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <p class='caption'>
+            Morph of the average face to me
+          </p>
+        </div>
+      </div>
+      <br>
+
+      <p> Below are some examples of faces in the dataset being morphed into the average population shape. </p>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <img src="100a.jpg" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-4">
+          <img src="100b.jpg" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-4">
+          <img src="101a.jpg" class="img-responsive" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <img src="0_warped.jpg" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-4">
+          <img src="1_warped.jpg" class="img-responsive" alt="Image">
+        </div>
+        <div class="col-sm-4">
+          <img src="2_warped.jpg" class="img-responsive" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <p class='caption'>
+            Example 1
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <p class='caption'>
+            Example 2
+          </p>
+        </div>
+        <div class="col-sm-4">
+          <p class='caption'>
+            Example 3
+          </p>
+        </div>
+      </div>
+
+    <h1>Caricatures</h1>
+      <p>
+        Using the results from the previous part, it is possible to extrapolate from the population mean to create a sort of caricature. This was done by first getting the distance between my face shape and the average population face shape (corresponding points). Then some scalar times that distance would be added onto the average population face shape to extrapolate a version of my face that emphasizes the features of the population more.
+      </p>
+    
+    <div class="row">
+      <div class="col-sm-offset-4 col-sm-4">
+        <img src="caricature_2.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-offset-4 col-sm-4">
+        <p class='caption'>
+          Very frightening
+        </p>
+      </div>
+    </div>
+
+    <h1>Changing Ethnicity and Gender</h1>
+    <p>
+      Using the average population faces of African American males and Asian females, it is possible to morph a face into another ethnicity. Below results are shown by applying just the cross dissolve, just the warp, and both the cross dissolve and the warp (morph).
+    </p>
+
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="me_normal.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="black_face.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="asian_female.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-4">
+        <p class='caption'>
+          Oh look, it's me again
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          Black male average face
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          Asian female average face
+        </p>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="black_warp_only_001.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="black_dissolve_only.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="black_030.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="asian_warp_only_001.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="asian_dissolve_only.jpg" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-4">
+        <img src="asian_030.jpg" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <p class='caption'>
+          Warp only
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          Cross dissolve only
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p class='caption'>
+          Both (morph)
+        </p>
+      </div>
+    </div>
+
+    <p>
+    Below are the morph animations for the ethnicity / gender changes.
+    </p>
+
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-4">
+        <img src="https://media.giphy.com/media/l378klF2m7kVfIPpS/giphy.gif" class="img-responsive" alt="Image">
+      </div>
+      <div class="col-sm-offset-2 col-sm-4">
+        <img src="https://media.giphy.com/media/3o7aCPFyMHOv8fouiY/giphy.gif" class="img-responsive" alt="Image">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-4">
+        <p class='caption'>
+          Morphing into an African-American male
+        </p>
+      </div>
+      <div class="col-sm-offset-2 col-sm-4">
+        <p class='caption'>
+          Morphing into an Asian female
+        </p>
+      </div>
+    </div>
+
+</div>
+<div class="container-fluid"></div>
+</div>
+</div>
+</body>
+</html>
