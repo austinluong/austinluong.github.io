@@ -1,0 +1,42 @@
+body {
+  font: 20px Montserrat, sans-serif;
+  line-height: 1.8;
+  color: #f5f6f7;
+}
+
+br {
+   display: block;
+   margin: 10px 0;
+}
+
+p {font-size: 16px;}
+
+.bg-1 { 
+  background-color: #202124;
+  color: #ffffff;
+}
+
+.bg-2 { 
+  background-color: #ffffff;
+  color: #555555;
+}
+
+.bg-3 {
+background-color: #474e5d;
+}
+
+.container-fluid {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 60px;
+  padding-right: 60px;
+}
+
+.caption {
+  font-size: 14px;
+  padding-top: 5px;
+}
+
+.col-header {
+  padding-left: 15px;
+}

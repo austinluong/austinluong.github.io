@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Autostitching Image Panoramas</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="col-sm-12 bg-1">
+    <div class="col-sm-8 col-sm-offset-2 bg-1">
+      <div class="container-fluid bg-3">
+        <h1>CS 194-26 Project 6 - Autostitching Image Panoramas</h1>
+        <h2>Austin Luong</h2>
+    </div>
+
+
+  <div class="container-fluid bg-2">
+  <div class="row">
+    <div class="col-sm-12">
+      <img src="berk_linear_uncropped.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+    <h2>Overview</h2>
+      <p>
+        The goal of this project is to be able to compute homographies between images. Using this, we can project the points of an image to match those those of another image. This lends itself to interesting applications such as image rectification and mosaic / panorama building. In the first part of this project, we manually select correspondences between images to compute the homographies. In the second part of this project, I implement a method to compute the correspondences automatically.
+      </p>
+
+    <h2>Part 1: Computing and Applying Homographies </h2>
+
+    <h3>Computing Homographies</h3>
+      <p>
+        Let p' represent points in a desired output image and p represent points from an input image (where p and p` are homogenous coordinates). We wish to find a transformation (a homography in this case) H such that p' = Hp. We can set up a linear system of equations to find such an H exactly with just 4 point correspondences between the images (which are chosen manually). However, doing so with just 4 points will make our results very prone to noise and error in the choosing the point correspondences. In actuality, we use many more than 4 point correspondences and use least squares to find an H that minimizes the error between the predicted and desired output. After some math, we find that we need to solve the least squares problem below:
+      <p>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <img src="math.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+
+      <p>
+        Where h_ij represents the elements of H, (x_i, y_i) represents the ith point in the input and (x'_i, y'_i) represents the correspondences ith point in the output.
+      </p>
+
+    <h3>Rectifying Images</h3>
+      <p>
+        Calculating homographies allows us to perform image rectification. First we pick points in an input image. Then we set the output points to those that we know those points would correspond to if we were looking at those points head on. For example, if we had an image of a room which had square tiles on the floor, we could rectify the image to the perspective of looking at the tiles top-down. We do this by selecting corners of the one of the tiles as our input points and then picking their correspondences to be a four points that make a square. We calculate the homography from these points and apply it to our input image to get a rectified view of our original image.
+      </p>
+      
+      <h4>Scanning a Document</h4>
+      <br>
+      <div class="row">
+        <div class="col-sm-6">
+          <img src="scan.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+            <img src="scan_rectified.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            A piece of paper to be scanned
+        </p>
+      </div>
+        <div class="col-sm-6">
+          <p class='caption text-center'>
+            A rectified version of the sheet of paper
+          </p>
+        </div>
+      </div>
+
+      <h4>Sistine Chapel</h4>
+      <br>
+      <div class="row">
+        <div class="col-sm-offset-1 col-sm-10">
+          <img src="sistine.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-offset-1 col-sm-10">
+          <p class='caption text-center'>
+            A picture of the Sistine Chapel
+          </p>
+        </div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-sm-offset-1 col-sm-10">
+          <img src="sistine_rectified.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-offset-1 col-sm-10">
+          <p class='caption text-center'>
+            Rectified view of the right wall
+          </p>
+        </div>
+      </div>
+    <br>
+    <h3>Creating Mosaics / Panoramas</h3>
+      <p>
+        Homographies also allow us to create image moasics from a set of input images with corresponding points. To do this, we pick point correspondences between pairs of overlapping images. We then apply the homographies to each pair of images to project one image onto another. In my examples, I only ever use three images, so in all cases I mapped a left and right image onto a center image and blending the resulting warped images.
+      </p>
+
+      <p>
+        I used two types of blending on the warped images: average blending and linear blending. For average blending, I simply averaged the portions of the warped images that overlapped and kept the rest of the warped images that did not overlap. Linear blending, is essentially the same but with one small modification: instead of simply averaging the overlapping regions, I used mask that gradually increased from 0 to 1 in the overlapping region (essentially a gradient from black to white) to blend the images. Average blending, usually created noticeable artifacts in the panorama while linear blending did not. Lienar blending did have problems with ghosting, however, which could have been solved using a blending technique such Laplacian pyramid blending.
+      </p>
+
+      <p>
+        For the results that follow, all images have been cropped to remove any black borders from the image (as seen in the picture at the top of the page).
+      </p>
+      <br>
+      <h4>Outside My Apartment</h4>
+      <br>
+      <div class="row">
+        <div class="col-sm-4">
+          <img src="apt1.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-4">
+            <img src="apt2.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-4">
+            <img src="apt3.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <br>
+
+      <h5>Average Blending</h5>
+      <div class="row">
+        <div class="col-sm-12">
+          <img src="apt_average.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <br>
+
+      <h5>Linear Blending</h5>
+      <div class="row">
+        <div class="col-sm-12">
+          <img src="apt_linear.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      
+      <br>
+      <br>
+      <h4>Sproul Plaza</h4>
+      <br>
+      <div class="row">
+        <div class="col-sm-4">
+          <img src="berk1.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-4">
+            <img src="berk2.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-4">
+            <img src="berk3.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <br>
+
+      <h5>Average Blending</h5>
+      <div class="row">
+        <div class="col-sm-12">
+          <img src="berk_average.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <br>
+
+      <h5>Linear Blending</h5>
+      <div class="row">
+        <div class="col-sm-12">
+          <img src="berk_linear.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      
+      <br>
+      <br>
+      <h4>Campanile</h4>
+      <br>
+      <div class="row">
+        <div class="col-sm-4">
+          <img src="camp1.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-4">
+            <img src="camp2.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-4">
+            <img src="camp3.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+      <br>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <h5>Average Blending</h5>
+          <img src="camp_average.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+        <div class="col-sm-6">
+          <h5>Linear Blending</h5>
+          <img src="camp_linear.jpg" class="img-responsive center-block" alt="Image">
+        </div>
+      </div>
+
+      <h3>Conclusion</h3>
+      <p>
+        This project taught me the power of homographies in be able to achieve a variety of useful and interesting effects. Image rectification, for example, has recently been popular in phone scanning apps. 
+      </p>
+
+  <h2>Part 2: Automatic Correspondence Selection </h2>      
+  <h3>Automatic Corner / Feature Detection</h3>
+  <p>
+    The first step in automatically selecting images correspoendences is automatic feature detection. The algorithm used for this is the Harris corner detector. The idea behind this algorithm is to detect x and y derivatives for each pixel in the image. These derivatives are then used to compute a corner reponse for each pixel in the image. The corner reponses are then thresholded to get the most corner-like points in the image. Regions of nearby corners are then further collapsed into a single corner point by taking the local maxima of the region.
+  </p>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <img src="harris1.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+    <div class="col-sm-6">
+        <img src="harris2.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Feature points returned by the harris corner detection algorithm
+    </p>
+    </div>
+  </div>
+
+  <p>
+    As can be seen from these results, this generates far too many points so we must further subset the points to use for future calculations. One way to select fewer points naively is to simply take the points with the highest corner responses.
+  </p>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <img src="top500_1.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+    <div class="col-sm-6">
+        <img src="top500_2.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Feature points with the top 1000 corner responses
+      </p>
+    </div>
+  </div>
+
+  <p>
+    However, this naive approach results in points being clumped around the same region higher corner reponse points tend to congregate around the same area. To prevent this, we can use Adapative Non-Maximal Suppresion. This technique works by calculating a surpression radius for each corner point. The surpression radius is the minimum distance from the current point and every other point that has a sufficiently higher corner response than the current point (how much higher is controlled by a chosen constant factor). The final points are then chosen from the points with the highest surpression radii.
+  </p>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <img src="anms1.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+    <div class="col-sm-6">
+        <img src="anms2.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Feature points with the top 1000 surpression radii as calculated by anms
+      </p>
+    </div>
+  </div>
+
+  <h3>Extracting and Matching Feature Descriptors</h3>
+  <p>
+    Now that the feature points have been obtained for each image, we can generate features descriptors to use to match feature points between the images. To do this, we extact image patches centered around each of the points. To protect against errors to due to excessive detail in the image patches, we select large image patches (40x40 in this case) and scale them down to a smaller resolution (8x8 in this case). To have some invariance to intensity shifts between the images, we normalize each patch by subtracting its mean and dividing by its standard deviation.
+
+    We then detect the best matches by computing the sum of squared difference (SSD) between each of the patches in one image to each of the patches in the other image. The ratio between the best match and second best match is calculated for each patch and used to threshold which featrues we choose.
+  </p>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <img src="matched1.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+    <div class="col-sm-6">
+        <img src="matched2.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Matched correspoendences between images calculated as described above
+      </p>
+    </div>
+  </div>
+
+  <h3>Outlier Removal with RANSAC</h3>
+  <p>
+    Even with feature matching, there are still plenty of correspondences between the image that are incorrect. We can eliminate these outliers by using random sample consensus (RANSAC). The first step in this algorithm is to sample 4 correspoendences we have found and use it to compute a homography. This homography is used to transform the feature points from one image to generate predicted output points that correspond to the other image. The distances between the predicted points and observed points are calculated and used to determine the number of inliers for this sample of correspondences. The inliers are determined as points that have prediction errors below some tolerance level. This process is then repeated for a number iterations. We then use all the inliers of the sample with the highest number of inliers to compute final homography.
+  </p>
+  <br>
+  <div class="row">
+    <div class="col-sm-6">
+      <img src="ransac1.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+    <div class="col-sm-6">
+        <img src="ransac2.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Matched correspoendences between images after removing outlieres with RANSAC
+      </p>
+    </div>
+  </div>
+
+  <h3>Automatic Panorama Creation</h3>
+    <p>
+        Using this final homography we can now create panoramas as before but wihout the need to manually select correspondences.
+    </p>
+  <br>
+  <h4>Outside My Apartment</h4>
+  <div class="row">
+    <div class="col-sm-12">
+      <img src="apt_linear.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Manual correspoendences
+      </p>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-12">
+      <img src="apt_linear_auto.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Automatic correspoendences
+      </p>
+    </div>
+  <br>
+  <h4>Sproul Plaza</h4>
+  <div class="row">
+    <div class="col-sm-12">
+      <img src="berk_linear.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Manual correspoendences
+      </p>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-12">
+      <img src="berk_linear_auto.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class='caption text-center'>
+        Automatic correspoendences
+      </p>
+    </div>
+  </div>
+  <br>
+  <h4>Campanile</h4>
+  <div class="row">
+    <div class="col-sm-6">
+      <img src="camp_linear.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+    <div class="col-sm-6">
+      <img src="camp_linear_auto.jpg" class="img-responsive center-block" alt="Image">
+    </div>
+  </div>
+  <div class="row"> 
+    <div class="col-sm-6">
+      <p class='caption text-center'>
+        Manual correspoendences
+      </p>
+    </div>
+    <div class="col-sm-6">
+      <p class='caption text-center'>
+        Automatic correspoendences
+      </p>
+    </div>
+  </div>
+
+  <h3>Conclusion</h3>
+  <p>
+    The most interesting part of this part of the project was the RANSAC algorithm. The algorithm was very simple but also incredibly effective in removing outliers. The final resulting correspondences had no mismatches in in any of the images I tired.
+  </p>
+
+<div class="container-fluid"></div>
+</div>
+</div>
+</body>
+</html>
